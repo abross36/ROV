@@ -1,4 +1,8 @@
 /*****************************************************************
+
+physics.rutgers.edu/~aatish/teach/srr/
+
+
 LSM9DS0_Simple.ino
 SFE_LSM9DS0 Library Simple Example Code
 Jim Lindblom @ SparkFun Electronics
@@ -95,7 +99,10 @@ LSM9DS0 dof(MODE_SPI, LSM9DS0_CSG, LSM9DS0_CSXM);
 #define PRINT_CALCULATED
 //#define PRINT_RAW
 
-#define PRINT_SPEED 250 // 500 ms between prints
+#define DELAY 100 // 500 ms between prints
+
+float accelPitch, accelRoll, gyroPitch, gyroRoll;
+float pitch, roll;
 
 void setup()
 {
@@ -123,14 +130,15 @@ void loop()
   //printMag();   // Print "M: mx, my, mz"
   
   dof.readAccel();
+  dof.readGyro();
   
-  // Print the heading and orientation for fun!
-  //printHeading((float) dof.mx, (float) dof.my);
-  printOrientation(dof.calcAccel(dof.ax), dof.calcAccel(dof.ay), 
+  getGyroOrientation(dof.calcGyro(dof.gx), dof.calcGyro(dof.gy));
+  getAccelOrientation(dof.calcAccel(dof.ax), dof.calcAccel(dof.ay), 
                    dof.calcAccel(dof.az));
-  //Serial.println();
   
-  delay(PRINT_SPEED);
+  getComplementaryOrientation(accelPitch, accelRoll, gyroPitch, gyroRoll);
+  
+  delay(DELAY);
 }
 
 void printGyro()
@@ -249,22 +257,52 @@ void printHeading(float hx, float hy)
 // Another fun function that does calculations based on the
 // acclerometer data. This function will print your LSM9DS0's
 // orientation -- it's roll and pitch angles.
-void printOrientation(float x, float y, float z)
+void getAccelOrientation(float x, float y, float z)
+{  
+  accelPitch = atan2(x, sqrt(y * y) + (z * z));
+  accelRoll = atan2(y, sqrt(x * x) + (z * z));
+  accelPitch *= 180.0 / PI;
+  accelRoll *= 180.0 / PI;
+  
+  //Serial.print(accelPitch);
+  //Serial.print(",");
+  //Serial.println(accelRoll);
+}
+
+void getGyroOrientation(float x, float y)
+{    
+  gyroRoll = gyroRoll - x*DELAY/1000.0;
+  gyroPitch = gyroPitch + y*DELAY/1000.0;
+  
+  if (gyroPitch > 360)
+  {
+    gyroPitch -= 360;
+  }
+  else if (gyroPitch < -360)
+  {
+    gyroPitch += 360;
+  } 
+
+  if (gyroRoll > 360)
+  {
+    gyroRoll -= 360;
+  }
+  else if (gyroRoll < -360)
+  {
+    gyroRoll += 360;
+  }       
+  
+  //Serial.print(gyroPitch);
+  //Serial.print(",");
+  //Serial.println(gyroRoll);
+}
+
+void getComplementaryOrientation(float aPitch, float aRoll, float gPitch, float gRoll)
 {
-  float pitch, roll;
-  
-  pitch = atan2(x, sqrt(y * y) + (z * z));
-  roll = atan2(y, sqrt(x * x) + (z * z));
-  pitch *= 180.0 / PI;
-  roll *= 180.0 / PI;
-  
+  pitch = 0.95*gPitch + 0.05*aPitch;
+  roll = 0.95*gRoll + 0.05*aRoll;
+
   Serial.print(pitch);
   Serial.print(",");
-  Serial.println(roll);
-
-  
-  //Serial.print("Pitch, Roll: ");
-  //Serial.print(pitch, 2);
-  //Serial.print(", ");
-  //Serial.println(roll, 2);
+  Serial.println(roll);  
 }
