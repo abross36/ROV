@@ -95,7 +95,7 @@ LSM9DS0 dof(MODE_SPI, LSM9DS0_CSG, LSM9DS0_CSXM);
 #define PRINT_CALCULATED
 //#define PRINT_RAW
 
-#define PRINT_SPEED 500 // 500 ms between prints
+#define PRINT_SPEED 250 // 500 ms between prints
 
 void setup()
 {
@@ -118,12 +118,14 @@ void setup()
 
 void loop()
 {
-  printGyro();  // Print "G: gx, gy, gz"
-  printAccel(); // Print "A: ax, ay, az"
-  printMag();   // Print "M: mx, my, mz"
+  //printGyro();  // Print "G: gx, gy, gz"
+  //printAccel(); // Print "A: ax, ay, az"
+  //printMag();   // Print "M: mx, my, mz"
+  
+  dof.readAccel();
   
   // Print the heading and orientation for fun!
-  printHeading((float) dof.mx, (float) dof.my);
+  //printHeading((float) dof.mx, (float) dof.my);
   printOrientation(dof.calcAccel(dof.ax), dof.calcAccel(dof.ay), 
                    dof.calcAccel(dof.az));
   Serial.println();
@@ -256,8 +258,12 @@ void printOrientation(float x, float y, float z)
   pitch *= 180.0 / PI;
   roll *= 180.0 / PI;
   
-  Serial.print("Pitch, Roll: ");
-  Serial.print(pitch, 2);
-  Serial.print(", ");
-  Serial.println(roll, 2);
+  Serial.print(pitch,2);
+  Serial.print(",");
+  Serial.println(roll,2);
+  
+  //Serial.print("Pitch, Roll: ");
+  //Serial.print(pitch, 2);
+  //Serial.print(", ");
+  //Serial.println(roll, 2);
 }
