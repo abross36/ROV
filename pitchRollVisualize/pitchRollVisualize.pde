@@ -16,12 +16,11 @@ void setup() {
   println(Serial.list());
   
   // open whatever port is the one you are using
-  myPort = new Serial(this, Serial.list()[2], 115200);
+  myPort = new Serial(this, Serial.list()[1], 115200);
   // only generate a serial event when you get a newline
   myPort.bufferUntil('\n');
   // enable smoothing for 3D
-  hint(ENABLE_OPENGL_4X_SMOOTH); 
-  
+  smooth(4);
 }
 
 void draw() {
@@ -30,6 +29,7 @@ void draw() {
   fill(#79BF3D);
   // draw the disc
   tilt();
+  
 }
 
 void tilt() {
@@ -51,9 +51,9 @@ void tilt() {
   text(pitch + "," + roll, -40, 10, 1);
 }
 
-void SerialEvent(Serial myPort) {
+void serialEvent(Serial myPort) {
   // read the serial buffer
-  String myStrng = myPort.readStringUntil('\n');
+  String myString = myPort.readStringUntil('\n');
   
   // if you got any bytes other than the linefeed
   if (myString != null) {
@@ -62,7 +62,7 @@ void SerialEvent(Serial myPort) {
     String items[] = split(myString, ',');
     if (items.length > 1) {
       pitch = float(items[0]);
-      roll = float(items[1]);
+      roll = float(items[1]);    
     }
   }
 }

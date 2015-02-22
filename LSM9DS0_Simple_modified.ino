@@ -110,10 +110,10 @@ void setup()
   // begin() returns a 16-bit value which includes both the gyro 
   // and accelerometers WHO_AM_I response. You can check this to
   // make sure communication was successful.
-  Serial.print("LSM9DS0 WHO_AM_I's returned: 0x");
-  Serial.println(status, HEX);
-  Serial.println("Should be 0x49D4");
-  Serial.println();
+  //Serial.print("LSM9DS0 WHO_AM_I's returned: 0x");
+  //Serial.println(status, HEX);
+  //Serial.println("Should be 0x49D4");
+  //Serial.println();
 }
 
 void loop()
@@ -128,7 +128,7 @@ void loop()
   //printHeading((float) dof.mx, (float) dof.my);
   printOrientation(dof.calcAccel(dof.ax), dof.calcAccel(dof.ay), 
                    dof.calcAccel(dof.az));
-  Serial.println();
+  //Serial.println();
   
   delay(PRINT_SPEED);
 }
@@ -258,9 +258,10 @@ void printOrientation(float x, float y, float z)
   pitch *= 180.0 / PI;
   roll *= 180.0 / PI;
   
-  Serial.print(pitch,2);
+  Serial.print(pitch);
   Serial.print(",");
-  Serial.println(roll,2);
+  Serial.println(roll);
+
   
   //Serial.print("Pitch, Roll: ");
   //Serial.print(pitch, 2);
